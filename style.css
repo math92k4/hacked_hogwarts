@@ -64,3 +64,16 @@ body {
   padding: 10vw 8vw 8vw 8vw;
   position: relative;
 }
+
+button.sortBy[data-sortdir="desc"]::after {
+  content: "△";
+}
+
+button.sortBy[data-sortdir="asc"]::after {
+  content: "▽";
+}
+
+button {
+  height: 30px;
+  width: 100px;
+}

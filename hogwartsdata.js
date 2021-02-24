@@ -201,9 +201,6 @@ function showPopup(student) {
    *
    *
    *CLOSURE FUNCTIONS -----
-   *
-   *
-   *
    *Expelling
    */
 
@@ -274,9 +271,6 @@ function showPopup(student) {
 }
 
 /*
- *
- *
- *
  *
  *
  * listManipulation - eventlistner set up
@@ -365,8 +359,20 @@ function getSelectedOption(selector) {
  */
 
 function selectSorting() {
-  const sortBy = this.value;
+  const sortBy = this.dataset.sort;
   let sortDirection = this.dataset.sortdir;
+
+  // Remove .sortBy from the previous clicked sort btn
+  const oldElement = document.querySelector(`[data-sort="${HTML.sortBy}"]`);
+  if (oldElement !== null) {
+    oldElement.classList.remove("sortBy");
+  }
+
+  console.log(oldElement);
+
+  console.log(this);
+  // add .sortBy to the clicked sort btn
+  this.classList.add("sortBy");
 
   if (sortDirection === "asc") {
     this.dataset.sortdir = "desc";
