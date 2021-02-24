@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cleaning hogwarts data</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Hogwarts</h1>
+
+    <div id="functionalityContainer">
+      <p>Filter options</p>
+      <select name="filter" id="filterSelector">
+        <option data-filtertype="all" value="all">Show all</option>
+        <option data-filtertype="house" value="Gryffindor">Gryffindor</option>
+        <option data-filtertype="house" value="Slytherin">Slytherin</option>
+        <option data-filtertype="house" value="Ravenclaw">Ravenclaw</option>
+        <option data-filtertype="house" value="Hufflepuff">Hufflepuff</option>
+        <option data-filtertype="expelled" value="expelled">Expelled</option>
+      </select>
+
+      <p>Sort by:</p>
+      <button class="sortButton" data-sortdir="asc" value="firstName">First name</button>
+      <button class="sortButton" data-sortdir="asc" value="lastName">Last name</button>
+      <button class="sortButton" data-sortdir="asc" value="house">House</button>
+
+      <input placeholder="search" type="text" id="searchBar" />
+    </div>
+
+    <table id="list">
+      <thead>
+        <tr>
+          <th>First name</th>
+          <th>Last name</th>
+          <th>Middle name</th>
+          <th>Nick name</th>
+          <th>House</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <template id="students">
+      <tr>
+        <td data-field="firstName">firstName</td>
+        <td data-field="lastName">lastName</td>
+        <td data-field="middleName">middleName</td>
+        <td data-field="nickName">nickName</td>
+        <td data-field="house">house</td>
+        <img src="" alt="" />
+      </tr>
+    </template>
+
+    <div id="popup">
+      <div id="popupContainer">
+        <div id="closePopup">X</div>
+        <div class="left">
+          <img src="" alt="" />
+          <p id="firstName"></p>
+          <p id="middleName"></p>
+          <p id="lastName"></p>
+          <p id="nickName"></p>
+        </div>
+        <div class="right">
+          <button id="prefectBtn"></button>
+          <button id="expellBtn"></button>
+        </div>
+      </div>
+    </div>
+
+    <div id="prefectConflict">
+      <div id="prefectContainer">
+        <button id="closePrefect">X</button>
+        <h1>You can only have on prefect of each gender pr house</h1>
+        <h2>Remove the other if you want to appoint a new one</h2>
+        <p><button id="remove1">Remove</button> <span class="student1">NAME, the TYPE</span></p>
+      </div>
+    </div>
+
+    <script src="hogwartsdata.js"></script>
+  </body>
+</html>
