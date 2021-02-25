@@ -207,7 +207,7 @@ function showPopup(student) {
   function toggleExpell() {
     closePopup();
     student.expelled = !student.expelled;
-    prepareDisplaying(allStudents);
+    buildList(allStudents);
   }
 
   /*
@@ -253,7 +253,7 @@ function showPopup(student) {
   function togglePrefect(student) {
     closePopup();
     student.prefected = !student.prefected;
-    prepareDisplaying(allStudents);
+    buildList(allStudents);
   }
 
   /*
@@ -315,6 +315,7 @@ function searchList(sortedList) {
  */
 
 function selectFilter() {
+  //Converts "true" -string to true -boolean
   let value = this.value;
   if (value === "true") {
     value = true;
@@ -333,8 +334,12 @@ function setFilter(filter, value) {
 
 function filterList() {
   const filteredData = allStudents.filter(theFilter);
+
   function theFilter(student) {
-    if (student[HTML.filter] === HTML.value || HTML.filter === "all") {
+    //Unless filter === "expelled", expelled students isnt shown
+    if (HTML.filter !== "expelled" && student.expelled === true) {
+      return false;
+    } else if (student[HTML.filter] === HTML.value || HTML.filter === "all") {
       return true;
     } else {
       return false;
