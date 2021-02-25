@@ -1,11 +1,14 @@
 "use strict";
 
+//Global arrays / lists
 const allStudents = [];
 const expelledList = [];
+const bloodHistory = [];
 
-// TODO: change filter to filterType, and value to filterBy
-const HTML = { filter: "all", value: "all", searchInput: "", sortBy: "" };
+//Global variables
+const HTML = { filter: "all", value: "all", searchInput: "", sortBy: "", direction: "" };
 
+//prototype for student objects
 const Student = {
   fullName: "",
   firstName: "",
@@ -15,7 +18,6 @@ const Student = {
   house: "",
   image: "",
   gender: "",
-  expelled: false,
   prefected: false,
 };
 
@@ -23,12 +25,14 @@ window.addEventListener("DOMContentLoaded", init);
 
 /*
  *
- *
+ * TODO: take care of race conditions
  * Initial
  */
 function init() {
-  //Get json data
-  loadJSON("https://petlatkea.dk/2021/hogwarts/students.json", cleanData);
+  //Get json data families
+  loadJSON("https://petlatkea.dk/2021/hogwarts/families.json", setFamilyBloodStatus);
+  //Get json data students
+  loadJSON("https://petlatkea.dk/2021/hogwarts/students.json", prepareData);
 }
 
 /*
@@ -45,9 +49,22 @@ async function loadJSON(url, callback) {
 /*
  *
  *
- * Cleaning data
+ * families.json stored globally bloodHistory
  */
-function cleanData(jsonData) {
+function setFamilyBloodStatus(jsonData) {
+  const half = jsonData.half;
+  const pure = jsonData.pure;
+
+  bloodHistory.half = half;
+  bloodHistory.pure = pure;
+}
+
+/*
+ *
+ *
+ * Prepare data
+ */
+function prepareData(jsonData) {
   jsonData.forEach((jsonObject) => {
     let student = Object.create(Student);
 
@@ -70,6 +87,9 @@ function cleanData(jsonData) {
 
     //get student image
     student.image = getImageName(student);
+
+    //get student bloodstatus
+    student.bloodStatus = getBloodStatus(student);
 
     allStudents.unshift(student);
   });
@@ -121,6 +141,23 @@ function getImageName(student) {
   const result = student.lastName.toLowerCase() + "_" + student.firstName.substring(0, 1).toLowerCase() + ".png";
   return result;
 }
+function getBloodStatus(student) {
+  if (bloodHistory.pure.some(compareFamilyNames)) {
+    return "Pure";
+  } else if (bloodHistory.half.some(compareFamilyNames)) {
+    return "Half";
+  } else {
+    return "Muggle born";
+  }
+
+  function compareFamilyNames(familyName) {
+    if (familyName.toLowerCase() === student.lastName.toLowerCase()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+}
 
 /*
  *
@@ -167,7 +204,7 @@ function displayStudent(student) {
  *
  *
  *
- * Popup
+ * Popup -- large closure function
  */
 function showPopup(student) {
   //Studen info
@@ -206,7 +243,11 @@ function showPopup(student) {
 
   function expellStudent() {
     closePopup();
-    student.expelled = !student.expelled;
+    //student.expelled = !student.expelled;
+    const iOfStudent = allStudents.indexOf(student);
+    const expelledStudent = allStudents.splice(iOfStudent, 1);
+    expelledList.unshift(expelledStudent[0]);
+    console.log(expelledList);
     buildList();
   }
 
@@ -222,7 +263,7 @@ function showPopup(student) {
       closePopup();
       buildList();
     } else if (conflictingStudent.length >= 1) {
-      prefectConflict(conflictingStudent[0]);
+      prefectConflictPopup(conflictingStudent[0]);
     } else {
       togglePrefect(student);
       closePopup();
@@ -238,7 +279,7 @@ function showPopup(student) {
     }
   }
 
-  function prefectConflict(prefectedStudent) {
+  function prefectConflictPopup(prefectedStudent) {
     //show the popup
     document.querySelector("#prefectConflict").classList.add("show");
 
@@ -297,16 +338,13 @@ function manipulateListView() {
 
   document.querySelector("#searchBar").addEventListener("input", setSearch);
 }
-
 /*
  * Search field
  */
-
 function setSearch() {
   HTML.searchInput = this.value;
   buildList();
 }
-
 function searchList(student) {
   if (student.fullName.includes(HTML.searchInput) || student.fullName.toLowerCase().includes(HTML.searchInput)) {
     return true;
@@ -314,11 +352,9 @@ function searchList(student) {
     return false;
   }
 }
-
 /*
  * filterList
  */
-
 function selectFilter() {
   //Converts "true" -string to true -boolean
   let filterBy = this.value;
@@ -329,13 +365,11 @@ function selectFilter() {
   const filterType = getDataFromOption(this, "filtertype");
   setFilter(filterType, filterBy);
 }
-
 function setFilter(filterType, filterBy) {
   HTML.filterType = filterType;
   HTML.filterBy = filterBy;
   buildList();
 }
-
 function filterList(student) {
   //Unless filter === "expelled", expelled students isnt shown
   if (student[HTML.filterType] === HTML.filterBy || HTML.filterType === "all") {
@@ -344,7 +378,6 @@ function filterList(student) {
     return false;
   }
 }
-
 function getSelectedList() {
   if (HTML.filterType === "expelled") {
     return expelledList;
@@ -352,7 +385,6 @@ function getSelectedList() {
     return allStudents;
   }
 }
-
 function getDataFromOption(selectTag, dataValue) {
   const options = selectTag.querySelectorAll("option");
   let result;
@@ -361,14 +393,11 @@ function getDataFromOption(selectTag, dataValue) {
       result = option.dataset[dataValue];
     }
   });
-  console.log(result);
   return result;
 }
-
 /*
  * sortList
  */
-
 function selectSorting() {
   const sortBy = this.dataset.sort;
   let sortDirection = this.dataset.sortdir;
@@ -397,13 +426,11 @@ function selectSorting() {
 
   setSorting(sortBy, direction);
 }
-
 function setSorting(sortBy, direction) {
   HTML.sortBy = sortBy;
   HTML.direction = direction;
   buildList();
 }
-
 function sortList(a, b) {
   if (a[HTML.sortBy] < b[HTML.sortBy]) {
     return -1 * HTML.direction;
@@ -411,9 +438,8 @@ function sortList(a, b) {
     return 1 * HTML.direction;
   }
 }
-
 /*
- *
+ * buildList
  */
 function buildList() {
   const selectedList = getSelectedList();
