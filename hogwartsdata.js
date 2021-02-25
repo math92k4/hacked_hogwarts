@@ -307,18 +307,12 @@ function setSearch() {
   buildList();
 }
 
-function searchList(sortedList) {
-  const searchResults = sortedList.filter(includingSearchChars);
-
-  function includingSearchChars(student) {
-    if (student.fullName.includes(HTML.searchInput) || student.fullName.toLowerCase().includes(HTML.searchInput)) {
-      return true;
-    } else {
-      return false;
-    }
+function searchList(student) {
+  if (student.fullName.includes(HTML.searchInput) || student.fullName.toLowerCase().includes(HTML.searchInput)) {
+    return true;
+  } else {
+    return false;
   }
-
-  return searchResults;
 }
 
 /*
@@ -327,38 +321,32 @@ function searchList(sortedList) {
 
 function selectFilter() {
   //Converts "true" -string to true -boolean
-  let value = this.value;
-  if (value === "true") {
-    value = true;
+  let filterBy = this.value;
+  if (filterBy === "true") {
+    filterBy = true;
   }
   //Returns dataset from the clicked option-tag, inside select-tag
   const filterType = getDataFromOption(this, "filtertype");
-  setFilter(filterType, value);
+  setFilter(filterType, filterBy);
 }
 
-function setFilter(filter, value) {
-  HTML.filter = filter;
-  HTML.value = value;
+function setFilter(filterType, filterBy) {
+  HTML.filterType = filterType;
+  HTML.filterBy = filterBy;
   buildList();
 }
 
-function filterList() {
-  const chosenArray = getChosenArray();
-  const filteredData = chosenArray.filter(theFilter);
-
-  function theFilter(student) {
-    //Unless filter === "expelled", expelled students isnt shown
-    if (student[HTML.filter] === HTML.value || HTML.filter === "all") {
-      return true;
-    } else {
-      return false;
-    }
+function filterList(student) {
+  //Unless filter === "expelled", expelled students isnt shown
+  if (student[HTML.filterType] === HTML.filterBy || HTML.filterType === "all") {
+    return true;
+  } else {
+    return false;
   }
-  return filteredData;
 }
 
-function getChosenArray() {
-  if (HTML.filter === "expelled") {
+function getSelectedList() {
+  if (HTML.filterType === "expelled") {
     return expelledList;
   } else {
     return allStudents;
@@ -407,36 +395,31 @@ function selectSorting() {
     direction = 1;
   }
 
-  setSort(sortBy, direction);
+  setSorting(sortBy, direction);
 }
 
-function setSort(sortBy, direction) {
+function setSorting(sortBy, direction) {
   HTML.sortBy = sortBy;
   HTML.direction = direction;
   buildList();
 }
 
-function sortList(currentList) {
-  const sortedData = currentList.sort(compareElements);
-
-  function compareElements(a, b) {
-    if (a[HTML.sortBy] < b[HTML.sortBy]) {
-      return -1 * HTML.direction;
-    } else {
-      return 1 * HTML.direction;
-    }
+function sortList(a, b) {
+  if (a[HTML.sortBy] < b[HTML.sortBy]) {
+    return -1 * HTML.direction;
+  } else {
+    return 1 * HTML.direction;
   }
-
-  return sortedData;
 }
 
 /*
  *
  */
 function buildList() {
-  const currentList = filterList();
-  const sortedList = sortList(currentList);
-  const searchedList = searchList(sortedList);
+  const selectedList = getSelectedList();
+  const filteredList = selectedList.filter(filterList);
+  const sortedList = filteredList.sort(sortList);
+  const finalList = sortedList.filter(searchList);
 
-  prepareDisplaying(searchedList);
+  prepareDisplaying(finalList);
 }
