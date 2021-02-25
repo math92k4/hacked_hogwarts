@@ -1,8 +1,10 @@
 "use strict";
 
 const allStudents = [];
+const expelledList = [];
 
-const HTML = { filter: "all", value: "all", searchInput: "" };
+// TODO: change filter to filterType, and value to filterBy
+const HTML = { filter: "all", value: "all", searchInput: "", sortBy: "" };
 
 const Student = {
   fullName: "",
@@ -50,7 +52,7 @@ function cleanData(jsonData) {
     let student = Object.create(Student);
 
     //Get nameparts
-    const nameParts = separateData(jsonObject.fullname);
+    const nameParts = separateNameParts(jsonObject.fullname);
 
     //clean other data
     student.house = jsonObject.house.trim();
@@ -64,17 +66,17 @@ function cleanData(jsonData) {
     student.house = capitalizeData(student.house);
 
     //Get full name
-    student.fullName = getFulleName(student);
+    student.fullName = getFullName(student);
 
     //get student image
-    student.image = getImage(student);
+    student.image = getImageName(student);
 
     allStudents.unshift(student);
   });
   prepareDisplaying(allStudents);
-  manipulateList();
+  manipulateListView();
 }
-function separateData(name) {
+function separateNameParts(name) {
   const firstSpace = name.trim().indexOf(" ");
   const lastSpace = name.trim().lastIndexOf(" ");
 
@@ -106,7 +108,7 @@ function capitalizeData(namePart) {
 
   return result;
 }
-function getFulleName(student) {
+function getFullName(student) {
   let fullName = `${student.firstName} ${student.middleName} ${student.nickName} ${student.lastName}`;
 
   while (fullName.includes("  ")) {
@@ -115,7 +117,7 @@ function getFulleName(student) {
 
   return fullName;
 }
-function getImage(student) {
+function getImageName(student) {
   const result = student.lastName.toLowerCase() + "_" + student.firstName.substring(0, 1).toLowerCase() + ".png";
   return result;
 }
@@ -127,10 +129,7 @@ function getImage(student) {
  */
 function prepareDisplaying(students) {
   document.querySelector("#list tbody").innerHTML = "";
-
-  const displayedStudents = students;
-
-  displayedStudents.forEach(displayStudent);
+  students.forEach(displayStudent);
 }
 
 /*
@@ -151,6 +150,7 @@ function displayStudent(student) {
   clone.querySelector("[data-field=house]").textContent = student.house;
   clone.querySelector("img").src = `imgs/${student.image}`;
 
+  //add listener to the cloned option
   clone.querySelector("tr").addEventListener("click", closurePopup);
 
   // append clone to list
@@ -194,7 +194,7 @@ function showPopup(student) {
 
   //listeners
   document.querySelector("#closePopup").addEventListener("click", closePopup);
-  document.querySelector("#popup #expellBtn").addEventListener("click", toggleExpell);
+  document.querySelector("#popup #expellBtn").addEventListener("click", expellStudent);
   document.querySelector("#popup #prefectBtn").addEventListener("click", prefectStudent);
 
   /*
@@ -204,10 +204,10 @@ function showPopup(student) {
    *Expelling
    */
 
-  function toggleExpell() {
+  function expellStudent() {
     closePopup();
     student.expelled = !student.expelled;
-    buildList(allStudents);
+    buildList();
   }
 
   /*
@@ -216,25 +216,36 @@ function showPopup(student) {
    * Prefecting
    */
   function prefectStudent() {
-    const sameGenderAndHouse = allStudents.filter(checkGenderAndHouse);
+    const conflictingStudent = allStudents.filter(checkGenderAndHouse);
     if (student.prefected === true) {
       togglePrefect(student);
-    } else if (sameGenderAndHouse.length >= 1) {
-      prefectConflict(sameGenderAndHouse);
+      closePopup();
+      buildList();
+    } else if (conflictingStudent.length >= 1) {
+      prefectConflict(conflictingStudent[0]);
     } else {
       togglePrefect(student);
-    }
-
-    function checkGenderAndHouse(compareStudent) {
-      if (student.house === compareStudent.house && student.gender === compareStudent.gender && compareStudent.prefected === true) {
-        return true;
-      } else {
-        return false;
-      }
+      closePopup();
+      buildList();
     }
   }
+
+  function checkGenderAndHouse(compareStudent) {
+    if (student.house === compareStudent.house && student.gender === compareStudent.gender && compareStudent.prefected === true) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   function prefectConflict(prefectedStudent) {
+    //show the popup
     document.querySelector("#prefectConflict").classList.add("show");
+
+    //insert info about the already prefected student
+    document.querySelector("#prefectConflict .student1").textContent = prefectedStudent.fullName;
+
+    //Eventlisteners for the 2 options
     document.querySelector("#remove1").addEventListener("click", removePrefect);
     document.querySelector("#closePrefect").addEventListener("click", closePrefectConflict);
 
@@ -242,6 +253,8 @@ function showPopup(student) {
       closePrefectConflict();
       togglePrefect(student);
       togglePrefect(prefectedStudent);
+      closePopup();
+      buildList();
     }
 
     function closePrefectConflict() {
@@ -250,10 +263,9 @@ function showPopup(student) {
       document.querySelector("#prefectConflict").classList.remove("show");
     }
   }
+
   function togglePrefect(student) {
-    closePopup();
     student.prefected = !student.prefected;
-    buildList(allStudents);
   }
 
   /*
@@ -264,7 +276,7 @@ function showPopup(student) {
    */
   function closePopup() {
     document.querySelector("#closePopup").removeEventListener("click", closePopup);
-    document.querySelector("#popup #expellBtn").removeEventListener("click", toggleExpell);
+    document.querySelector("#popup #expellBtn").removeEventListener("click", expellStudent);
     document.querySelector("#popup #prefectBtn").removeEventListener("click", prefectStudent);
     document.querySelector("#popup").classList.remove("show");
   }
@@ -275,7 +287,7 @@ function showPopup(student) {
  *
  * listManipulation - eventlistner set up
  */
-function manipulateList() {
+function manipulateListView() {
   document.querySelector("#filterSelector").addEventListener("change", selectFilter);
 
   const sortBtns = document.querySelectorAll(".sortButton");
@@ -292,7 +304,6 @@ function manipulateList() {
 
 function setSearch() {
   HTML.searchInput = this.value;
-  console.log(HTML.searchInput);
   buildList();
 }
 
@@ -320,10 +331,9 @@ function selectFilter() {
   if (value === "true") {
     value = true;
   }
-  const selectedOption = getSelectedOption(this);
-  const filter = selectedOption.dataset.filtertype;
-
-  setFilter(filter, value);
+  //Returns dataset from the clicked option-tag, inside select-tag
+  const filterType = getDataFromOption(this, "filtertype");
+  setFilter(filterType, value);
 }
 
 function setFilter(filter, value) {
@@ -333,13 +343,12 @@ function setFilter(filter, value) {
 }
 
 function filterList() {
-  const filteredData = allStudents.filter(theFilter);
+  const chosenArray = getChosenArray();
+  const filteredData = chosenArray.filter(theFilter);
 
   function theFilter(student) {
     //Unless filter === "expelled", expelled students isnt shown
-    if (HTML.filter !== "expelled" && student.expelled === true) {
-      return false;
-    } else if (student[HTML.filter] === HTML.value || HTML.filter === "all") {
+    if (student[HTML.filter] === HTML.value || HTML.filter === "all") {
       return true;
     } else {
       return false;
@@ -348,14 +357,23 @@ function filterList() {
   return filteredData;
 }
 
-function getSelectedOption(selector) {
-  const options = selector.querySelectorAll("option");
+function getChosenArray() {
+  if (HTML.filter === "expelled") {
+    return expelledList;
+  } else {
+    return allStudents;
+  }
+}
+
+function getDataFromOption(selectTag, dataValue) {
+  const options = selectTag.querySelectorAll("option");
   let result;
   options.forEach((option) => {
     if (option.selected === true) {
-      result = option;
+      result = option.dataset[dataValue];
     }
   });
+  console.log(result);
   return result;
 }
 
@@ -373,9 +391,6 @@ function selectSorting() {
     oldElement.classList.remove("sortBy");
   }
 
-  console.log(oldElement);
-
-  console.log(this);
   // add .sortBy to the clicked sort btn
   this.classList.add("sortBy");
 
