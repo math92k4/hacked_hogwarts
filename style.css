@@ -2,16 +2,64 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: serif;
 }
 
 body {
-  background-color: rgb(254, 202, 112);
+  background-color: #feca70;
 }
 
-#functionalityContainer,
-#list {
-  max-width: 500px;
+#sitetop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 20px;
+}
+
+#splash {
+  width: 300px;
+}
+
+#functionalityContainer {
+  max-width: 1200px;
   margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sortings {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 50px;
+}
+
+#list {
+  margin: 20px auto 100px auto;
+}
+
+#list th {
+  min-width: 200px;
+  text-align: start;
+}
+#list th:last-child {
+  min-width: 0px;
+}
+
+#list td {
+  min-width: 200px;
+}
+#list td:last-child {
+  min-width: 0px;
+}
+
+.hide {
+  display: none;
 }
 
 #popup {
@@ -32,9 +80,45 @@ body {
 
 #popupContainer {
   background-color: rgb(233, 233, 255);
-  font-family: Arial, Helvetica, sans-serif;
-  padding: 10vw 8vw 8vw 8vw;
+  padding: 50px 50px;
   position: relative;
+}
+
+.innerContainer {
+  background-color: #feca70;
+  padding: 50px 50px;
+}
+
+.flexcontainer {
+  display: flex;
+}
+
+#closePopup {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+#popup .right {
+  display: flex;
+  flex-direction: column;
+}
+
+#popup .left {
+  display: flex;
+  align-items: center;
+}
+#popup .middle {
+  margin: 0 20px;
+}
+
+#popup button {
+  margin: 10px;
+}
+#popup p {
+  margin: 10px;
 }
 
 /*
@@ -60,7 +144,6 @@ body {
 
 #prefectContainer {
   background-color: rgb(233, 233, 255);
-  font-family: Arial, Helvetica, sans-serif;
   padding: 10vw 8vw 8vw 8vw;
   position: relative;
 }
@@ -75,5 +158,82 @@ button.sortBy[data-sortdir="asc"]::after {
 
 button {
   height: 30px;
-  width: 100px;
+  min-width: 100px;
+  padding: 0 20px;
+  background-color: #fafae2;
+  border: 1px solid #151515;
+  cursor: pointer;
+}
+
+#functionalityContainer button {
+  margin: 0 5px;
+}
+
+#filterSelector {
+  height: 30px;
+  min-width: 100px;
+  margin-left: 5px;
+  background-color: #fafae2;
+  border: 1px solid #151515;
+}
+#searchBar {
+  height: 30px;
+  min-width: 100px;
+  background-color: #fafae2;
+  border: 1px solid #151515;
+}
+
+#countBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 50px;
+  background-color: #fafae2;
+  border-top: 1px solid #151515;
+}
+
+#badgeContainer {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 75px;
+  margin: 20px 0 0 0;
+}
+
+#badgeContainer img {
+  width: 50px;
+}
+
+.transparent {
+  opacity: 0.2;
+}
+
+#popupContainer.gryffindor {
+  background-color: #bc182d;
+}
+
+#popupContainer.hufflepuff {
+  background-color: #cca42d;
+}
+
+#popupContainer.ravenclaw {
+  background-color: #2760a5;
+}
+
+#popupContainer.slytherin {
+  background-color: #136837;
+}
+
+#tdbadges {
+  display: flex;
+}
+
+#tdbadges img {
+  width: 30px;
+}
+
+.expelled {
+  text-decoration: line-through;
 }

@@ -8,10 +8,13 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>Hogwarts</h1>
+    <div id="sitetop">
+      <h1>Hogwarts student list</h1>
+      <img id="splash" src="imgs/hogwarts.png" alt="" />
+    </div>
 
     <div id="functionalityContainer">
-      <p>Filter options</p>
+      <p>Filter:</p>
       <select name="filter" id="filterSelector">
         <option data-filtertype="all" value="all">Show all</option>
         <option data-filtertype="house" value="Gryffindor">Gryffindor</option>
@@ -21,22 +24,22 @@
         <option data-filtertype="expelled" value="true">Expelled</option>
       </select>
 
-      <p>Sort by:</p>
-      <button class="sortButton" data-sortdir="asc" data-sort="firstName">First name</button>
-      <button class="sortButton" data-sortdir="asc" data-sort="lastName">Last name</button>
-      <button class="sortButton" data-sortdir="asc" data-sort="house">House</button>
+      <div class="sortings">
+        <p>Sort by:</p>
+        <button class="sortButton" data-sortdir="asc" data-sort="firstName">First name</button>
+        <button class="sortButton" data-sortdir="asc" data-sort="lastName">Last name</button>
+        <button class="sortButton" data-sortdir="asc" data-sort="house">House</button>
+      </div>
 
-      <input placeholder="search" type="text" id="searchBar" />
+      <input placeholder="Search" type="text" id="searchBar" />
     </div>
 
     <table id="list">
       <thead>
         <tr>
-          <th>First name</th>
-          <th>Last name</th>
-          <th>Middle name</th>
-          <th>Nick name</th>
+          <th>Name</th>
           <th>House</th>
+          <th>Badges</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -44,28 +47,40 @@
 
     <template id="students">
       <tr>
-        <td data-field="firstName">firstName</td>
-        <td data-field="lastName">lastName</td>
-        <td data-field="middleName">middleName</td>
-        <td data-field="nickName">nickName</td>
+        <td data-field="fullName">fullName</td>
         <td data-field="house">house</td>
-        <img src="" alt="" />
+        <td id="tdbadges">
+          <img src="" alt="" class="house" /><img src="imgs/prefect.png" alt="" class="prefect" /><img src="imgs/inqsquad.png" alt="" class="inq" />
+        </td>
       </tr>
     </template>
 
     <div id="popup">
       <div id="popupContainer">
         <div id="closePopup">X</div>
-        <div class="left">
-          <img src="" alt="" />
-          <p id="firstName"></p>
-          <p id="middleName"></p>
-          <p id="lastName"></p>
-          <p id="nickName"></p>
-        </div>
-        <div class="right">
-          <button id="prefectBtn"></button>
-          <button id="expellBtn"></button>
+        <div class="innerContainer">
+          <div class="flexcontainer">
+            <div class="left">
+              <img src="" alt="" />
+            </div>
+            <div class="middle">
+              <p id="firstName"></p>
+              <p id="middleName"></p>
+              <p id="lastName"></p>
+              <p id="nickName"></p>
+              <p id="bloodStatus"></p>
+            </div>
+            <div class="right">
+              <button id="prefectBtn"></button>
+              <button id="expellBtn"></button>
+              <button id="inqBtn" class="hide"></button>
+            </div>
+          </div>
+          <div id="badgeContainer">
+            <img src="" alt="" id="houseimg" />
+            <img src="imgs/prefect.png" alt="" id="prefectimg" class="transparent" />
+            <img src="imgs/inqsquad.png" alt="" id="inqimg" class="transparent" />
+          </div>
         </div>
       </div>
     </div>
@@ -77,6 +92,16 @@
         <h2>Remove the other if you want to appoint a new one</h2>
         <p><button id="remove1">Remove</button> <span class="student1">NAME, the TYPE</span></p>
       </div>
+    </div>
+
+    <div id="countBar">
+      <p>Total: <span id="totalCount"></span></p>
+      <p>Gryffindor: <span id="gryffindorCount"></span></p>
+      <p>Hufflepuff: <span id="hufflepuffCount"></span></p>
+      <p>Ravenclaw: <span id="ravenclawCount"></span></p>
+      <p>Slytherin: <span id="slytherinCount"></span></p>
+      <p>Expelled: <span id="expelledCount"></span></p>
+      <p>Displaying: <span id="displayingCount"></span></p>
     </div>
 
     <script src="hogwartsdata.js"></script>
