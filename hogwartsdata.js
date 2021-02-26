@@ -27,40 +27,62 @@ window.addEventListener("DOMContentLoaded", init);
 
 /*
  *
- * TODO: take care of race conditions
+ *
  * Initial
  */
 function init() {
+  loadExternalData();
+}
+
+/*
+ *
+ *
+ * loadExternalData
+ */
+function loadExternalData() {
+  let isBloodLoaded = false;
+
   //Get json data families
   loadJSON("https://petlatkea.dk/2021/hogwarts/families.json", setFamilyBloodStatus);
   //Get json data students
-  loadJSON("https://petlatkea.dk/2021/hogwarts/students.json", prepareData);
+  loadJSON("https://petlatkea.dk/2021/hogwarts/students.json", isBloodStatusLoaded);
+
+  /*
+   *
+   *
+   * Fetch json
+   */
+  async function loadJSON(url, callback) {
+    const respons = await fetch(url);
+    const jsonData = await respons.json();
+    callback(jsonData);
+  }
+
+  /*
+   *
+   *
+   * families.json stored globally bloodHistory
+   */
+  function setFamilyBloodStatus(jsonData) {
+    const half = jsonData.half;
+    const pure = jsonData.pure;
+
+    bloodHistory.half = half;
+    bloodHistory.pure = pure;
+
+    console.log("loaded");
+
+    isBloodLoaded = true;
+  }
+
+  function isBloodStatusLoaded(jsonData) {
+    if (isBloodLoaded === false) {
+      setTimeout(isBloodStatusLoaded(jsonData), 100);
+    } else {
+      prepareData(jsonData);
+    }
+  }
 }
-
-/*
- *
- *
- * Fetch json
- */
-async function loadJSON(url, callback) {
-  const respons = await fetch(url);
-  const jsonData = await respons.json();
-  callback(jsonData);
-}
-
-/*
- *
- *
- * families.json stored globally bloodHistory
- */
-function setFamilyBloodStatus(jsonData) {
-  const half = jsonData.half;
-  const pure = jsonData.pure;
-
-  bloodHistory.half = half;
-  bloodHistory.pure = pure;
-}
-
 /*
  *
  *
