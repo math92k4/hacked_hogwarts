@@ -7,6 +7,7 @@ const bloodHistory = [];
 
 //Global variables
 const HTML = { filter: "all", value: "all", searchInput: "", sortBy: "", direction: "" };
+const count = { total: 0, Gryffindor: 0, Gufflepuff: 0, Ravenclaw: 0, Slytherin: 0 };
 
 //prototype for student objects
 const Student = {
@@ -19,6 +20,7 @@ const Student = {
   image: "",
   gender: "",
   prefected: false,
+  expelled: false,
 };
 
 window.addEventListener("DOMContentLoaded", init);
@@ -142,20 +144,12 @@ function getImageName(student) {
   return result;
 }
 function getBloodStatus(student) {
-  if (bloodHistory.pure.some(compareFamilyNames)) {
+  if (bloodHistory.pure.includes(student.lastName)) {
     return "Pure";
-  } else if (bloodHistory.half.some(compareFamilyNames)) {
+  } else if (bloodHistory.half.includes(student.lastName)) {
     return "Half";
   } else {
     return "Muggle born";
-  }
-
-  function compareFamilyNames(familyName) {
-    if (familyName.toLowerCase() === student.lastName.toLowerCase()) {
-      return true;
-    } else {
-      return false;
-    }
   }
 }
 
@@ -166,7 +160,27 @@ function getBloodStatus(student) {
  */
 function prepareDisplaying(students) {
   document.querySelector("#list tbody").innerHTML = "";
-  students.forEach(displayStudent);
+
+  const studentCount = countStudents(students);
+  displayCount(studentCount);
+  students.forEach(displaySudent);
+}
+
+function countStudents(students) {
+  const result = { total: 0, displaying: 0, Gryffindor: 0, Hufflepuff: 0, Ravenclaw: 0, Slytherin: 0 };
+
+  allStudents.forEach((student) => {
+    result[student.house]++;
+    result.total++;
+  });
+  students.forEach((student) => {
+    result.displaying++;
+  });
+
+  return result;
+}
+function displayCount(studentCount) {
+  console.log(studentCount);
 }
 
 /*
@@ -175,7 +189,7 @@ function prepareDisplaying(students) {
  *
  * Display List
  */
-function displayStudent(student) {
+function displaySudent(student) {
   // create clone
   const clone = document.querySelector("template#students").content.cloneNode(true);
 
@@ -214,11 +228,7 @@ function showPopup(student) {
   document.querySelector("#popup #nickName").textContent = `Nick name: ${student.nickName}`;
 
   //Txt on buttons
-  if (student.expelled === false) {
-    document.querySelector("#popup #expellBtn").textContent = `Expel ${student.nickName}`;
-  } else {
-    document.querySelector("#popup #expellBtn").textContent = `welcome ${student.nickName} back`;
-  }
+  document.querySelector("#popup #expellBtn").textContent = `Expel ${student.nickName}`;
 
   if (student.prefected === false) {
     document.querySelector("#popup #prefectBtn").textContent = `Prefect ${student.nickName}`;
@@ -242,13 +252,12 @@ function showPopup(student) {
    */
 
   function expellStudent() {
-    closePopup();
-    //student.expelled = !student.expelled;
+    student.expelled = !student.expelled;
     const iOfStudent = allStudents.indexOf(student);
     const expelledStudent = allStudents.splice(iOfStudent, 1);
     expelledList.unshift(expelledStudent[0]);
-    console.log(expelledList);
-    buildList();
+
+    closePopup();
   }
 
   /*
@@ -261,13 +270,11 @@ function showPopup(student) {
     if (student.prefected === true) {
       togglePrefect(student);
       closePopup();
-      buildList();
     } else if (conflictingStudent.length >= 1) {
       prefectConflictPopup(conflictingStudent[0]);
     } else {
       togglePrefect(student);
       closePopup();
-      buildList();
     }
   }
 
@@ -295,7 +302,6 @@ function showPopup(student) {
       togglePrefect(student);
       togglePrefect(prefectedStudent);
       closePopup();
-      buildList();
     }
 
     function closePrefectConflict() {
@@ -315,10 +321,14 @@ function showPopup(student) {
    *
    * Close popUp
    */
+
   function closePopup() {
     document.querySelector("#closePopup").removeEventListener("click", closePopup);
     document.querySelector("#popup #expellBtn").removeEventListener("click", expellStudent);
     document.querySelector("#popup #prefectBtn").removeEventListener("click", prefectStudent);
+
+    buildList();
+
     document.querySelector("#popup").classList.remove("show");
   }
 }
@@ -363,6 +373,7 @@ function selectFilter() {
   }
   //Returns dataset from the clicked option-tag, inside select-tag
   const filterType = getDataFromOption(this, "filtertype");
+
   setFilter(filterType, filterBy);
 }
 function setFilter(filterType, filterBy) {
@@ -371,7 +382,6 @@ function setFilter(filterType, filterBy) {
   buildList();
 }
 function filterList(student) {
-  //Unless filter === "expelled", expelled students isnt shown
   if (student[HTML.filterType] === HTML.filterBy || HTML.filterType === "all") {
     return true;
   } else {
