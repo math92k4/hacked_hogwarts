@@ -440,9 +440,9 @@ function showPopup(student) {
 
     function removePrefect() {
       closePrefectConflict();
-      closePopup();
       togglePrefect(student);
       togglePrefect(prefectedStudent);
+      closePopup();
     }
 
     function closePrefectConflict() {
