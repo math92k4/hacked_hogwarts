@@ -20,6 +20,7 @@ const Student = {
   house: "",
   image: "",
   gender: "",
+  isMe: false,
   inqSquad: false,
   prefected: false,
   expelled: false,
@@ -315,7 +316,7 @@ function showPopup(student) {
   document.querySelector("#popup #prefectBtn").addEventListener("click", prefectStudent);
 
   //only enables inqBtn if bloodstatus = pure && House = Slytherin ------ unless the student is expelled
-  if (student.bloodStatus === "Pure" && student.house === "Slytherin") {
+  if ((student.bloodStatus === "Pure" && student.house === "Slytherin") || isHacked === true) {
     document.querySelector("#inqBtn").classList = "";
     document.querySelector("#inqBtn").addEventListener("click", toggleInqSquad);
     if (student.inqSquad === false) {
@@ -335,11 +336,18 @@ function showPopup(student) {
    * inqSquad
    */
   function toggleInqSquad() {
-    document.querySelector("#inqBtn").removeEventListener("click", toggleInqSquad);
-
     student.inqSquad = !student.inqSquad;
 
+    if (isHacked) {
+      setTimeout(reToggleInqSquad, 2000);
+    }
+
     closePopup();
+  }
+
+  function reToggleInqSquad() {
+    student.inqSquad = false;
+    buildList();
   }
 
   /*
@@ -422,6 +430,10 @@ function showPopup(student) {
    */
 
   function closePopup() {
+    if ((student.bloodStatus === "Pure" && student.house === "Slytherin") || isHacked === true) {
+      document.querySelector("#inqBtn").removeEventListener("click", toggleInqSquad);
+      console.log("dims");
+    }
     document.querySelector("#closePopup").removeEventListener("click", closePopup);
     document.querySelector("#popup #expellBtn").removeEventListener("click", expellStudent);
     document.querySelector("#popup #prefectBtn").removeEventListener("click", prefectStudent);
@@ -567,8 +579,58 @@ function searchList(student) {
 
 function hackTheSystem() {
   if (isHacked === false) {
+    addMyself();
     isHacked = true;
   } else {
     console.log("Nice try Peter..");
+  }
+}
+
+function addMyself() {
+  const me = createMyself();
+  const rndIndex = getRandomIndex();
+
+  allStudents.splice(rndIndex, 0, me);
+
+  ruinBloodStatus();
+}
+
+function createMyself() {
+  const me = Object.create(Student);
+  me.fullName = "Mathias Dahl Jensen";
+  me.firstName = "Mathias";
+  me.middleName = "Dahl";
+  me.lastName = "Jensen";
+  me.nickName = "MUHAHA";
+  me.house = "Slytherin";
+  me.gender = "boy";
+  me.bloodStatus = "Pure";
+  me.isMe = true;
+
+  return me;
+}
+
+function getRandomIndex() {
+  const listLength = allStudents.length;
+  const rndIndex = Math.floor(Math.random() * listLength);
+  return rndIndex;
+}
+
+function ruinBloodStatus() {
+  allStudents.forEach(rndBloodStatus);
+  buildList();
+}
+
+function rndBloodStatus(student) {
+  const rndNumber = Math.floor(Math.random() * 3) + 1;
+
+  if (student.bloodStatus === "Muggle born" || student.bloodStatus === "Half") {
+    student.bloodStatus = "Pure";
+  } else if (rndNumber === 1) {
+    student.bloodStatus = "Muggle born";
+  } else if (rndNumber === 2) {
+    student.bloodStatus = "Half";
+  } else {
+    student.bloodStatus = "Pure";
   }
 }

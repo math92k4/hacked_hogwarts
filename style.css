@@ -6,7 +6,30 @@
 }
 
 body {
+}
+
+.backgorund {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: -1;
+  height: 100vh;
+  background-image: url("imgs/background.png");
+  background-position: center;
+  background-repeat: repeat;
+}
+
+tbody tr {
+  cursor: pointer;
+}
+
+section {
+  max-width: 980px;
+  margin: 30px auto 100px auto;
   background-color: #feca70;
+  padding-bottom: 30px;
+  box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.8);
 }
 
 #sitetop {
@@ -40,7 +63,7 @@ h1 {
 }
 
 #list {
-  margin: 20px auto 100px auto;
+  margin: 20px auto 0 auto;
 }
 
 #list th {
@@ -79,8 +102,10 @@ h1 {
 }
 
 #popupContainer {
-  background-color: rgb(233, 233, 255);
-  padding: 50px 50px;
+  background-color: #feca70;
+  border: 20px solid;
+  border-radius: 20px;
+  padding: 50px 50px 20px 50px;
   position: relative;
 }
 
@@ -211,19 +236,19 @@ button {
 }
 
 #popupContainer.gryffindor {
-  background-color: #bc182d;
+  border-color: #bc182d;
 }
 
 #popupContainer.hufflepuff {
-  background-color: #cca42d;
+  border-color: #cca42d;
 }
 
 #popupContainer.ravenclaw {
-  background-color: #2760a5;
+  border-color: #2760a5;
 }
 
 #popupContainer.slytherin {
-  background-color: #136837;
+  border-color: #136837;
 }
 
 #tdbadges {

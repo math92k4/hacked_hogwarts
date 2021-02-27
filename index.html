@@ -8,57 +8,58 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div id="sitetop">
-      <h1>Hogwarts student list</h1>
-      <img id="splash" src="imgs/hogwarts.png" alt="" />
-    </div>
-
-    <div id="functionalityContainer">
-      <p>Filter:</p>
-      <select name="filter" id="filterSelector">
-        <option data-filtertype="all" value="all">Show all</option>
-        <option data-filtertype="house" value="Gryffindor">Gryffindor</option>
-        <option data-filtertype="house" value="Slytherin">Slytherin</option>
-        <option data-filtertype="house" value="Ravenclaw">Ravenclaw</option>
-        <option data-filtertype="house" value="Hufflepuff">Hufflepuff</option>
-        <option data-filtertype="expelled" value="true">Expelled</option>
-      </select>
-
-      <div class="sortings">
-        <p>Sort by:</p>
-        <button class="sortButton" data-sortdir="asc" data-sort="firstName">First name</button>
-        <button class="sortButton" data-sortdir="asc" data-sort="lastName">Last name</button>
-        <button class="sortButton" data-sortdir="asc" data-sort="house">House</button>
+    <div class="backgorund"></div>
+    <section>
+      <div id="sitetop">
+        <h1>Hogwarts student list</h1>
+        <img id="splash" src="imgs/hogwarts.png" alt="" />
       </div>
 
-      <input placeholder="Search" type="text" id="searchBar" />
-    </div>
+      <div id="functionalityContainer">
+        <p>Filter:</p>
+        <select name="filter" id="filterSelector">
+          <option data-filtertype="all" value="all">Show all</option>
+          <option data-filtertype="house" value="Gryffindor">Gryffindor</option>
+          <option data-filtertype="house" value="Slytherin">Slytherin</option>
+          <option data-filtertype="house" value="Ravenclaw">Ravenclaw</option>
+          <option data-filtertype="house" value="Hufflepuff">Hufflepuff</option>
+          <option data-filtertype="expelled" value="true">Expelled</option>
+        </select>
 
-    <table id="list">
-      <thead>
+        <div class="sortings">
+          <p>Sort by:</p>
+          <button class="sortButton" data-sortdir="asc" data-sort="firstName">First name</button>
+          <button class="sortButton" data-sortdir="asc" data-sort="lastName">Last name</button>
+          <button class="sortButton" data-sortdir="asc" data-sort="house">House</button>
+        </div>
+
+        <input placeholder="Search" type="text" id="searchBar" />
+      </div>
+
+      <table id="list">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>House</th>
+            <th>Badges</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <template id="students">
         <tr>
-          <th>Name</th>
-          <th>House</th>
-          <th>Badges</th>
+          <td data-field="fullName">fullName</td>
+          <td data-field="house">house</td>
+          <td id="tdbadges">
+            <img src="" alt="" class="house" /><img src="imgs/prefect.png" alt="" class="prefect" /><img src="imgs/inqsquad.png" alt="" class="inq" />
+          </td>
         </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+      </template>
 
-    <template id="students">
-      <tr>
-        <td data-field="fullName">fullName</td>
-        <td data-field="house">house</td>
-        <td id="tdbadges">
-          <img src="" alt="" class="house" /><img src="imgs/prefect.png" alt="" class="prefect" /><img src="imgs/inqsquad.png" alt="" class="inq" />
-        </td>
-      </tr>
-    </template>
-
-    <div id="popup">
-      <div id="popupContainer">
-        <div id="closePopup">X</div>
-        <div class="innerContainer">
+      <div id="popup">
+        <div id="popupContainer">
+          <div id="closePopup">X</div>
           <div class="flexcontainer">
             <div class="left">
               <img src="" alt="" />
@@ -83,26 +84,26 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <div id="prefectConflict">
-      <div id="prefectContainer">
-        <button id="closePrefect">X</button>
-        <h1>You can only have on prefect of each gender pr house</h1>
-        <h2>Remove the other if you want to appoint a new one</h2>
-        <p><button id="remove1">Remove</button> <span class="student1">NAME, the TYPE</span></p>
+      <div id="prefectConflict">
+        <div id="prefectContainer">
+          <button id="closePrefect">X</button>
+          <h1>You can only have on prefect of each gender pr house</h1>
+          <h2>Remove the other if you want to appoint a new one</h2>
+          <p><button id="remove1">Remove</button> <span class="student1">NAME, the TYPE</span></p>
+        </div>
       </div>
-    </div>
 
-    <div id="countBar">
-      <p>Total: <span id="totalCount"></span></p>
-      <p>Gryffindor: <span id="gryffindorCount"></span></p>
-      <p>Hufflepuff: <span id="hufflepuffCount"></span></p>
-      <p>Ravenclaw: <span id="ravenclawCount"></span></p>
-      <p>Slytherin: <span id="slytherinCount"></span></p>
-      <p>Expelled: <span id="expelledCount"></span></p>
-      <p>Displaying: <span id="displayingCount"></span></p>
-    </div>
+      <div id="countBar">
+        <p>Total: <span id="totalCount"></span></p>
+        <p>Gryffindor: <span id="gryffindorCount"></span></p>
+        <p>Hufflepuff: <span id="hufflepuffCount"></span></p>
+        <p>Ravenclaw: <span id="ravenclawCount"></span></p>
+        <p>Slytherin: <span id="slytherinCount"></span></p>
+        <p>Expelled: <span id="expelledCount"></span></p>
+        <p>Displaying: <span id="displayingCount"></span></p>
+      </div>
+    </section>
 
     <script src="hogwartsdata.js"></script>
   </body>
