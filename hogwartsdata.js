@@ -110,14 +110,17 @@ function prepareData(jsonData) {
     //Get full name
     student.fullName = getFullName(student);
 
-    //get student image
-    student.image = getImageName(student);
-
     //get student bloodstatus
     student.bloodStatus = getBloodStatus(student);
 
     allStudents.unshift(student);
   });
+
+  //Gets image names
+  allStudents.forEach((student) => {
+    student.image = getImageName(student);
+  });
+
   prepareDisplaying(allStudents);
   manipulateListView();
 }
@@ -162,10 +165,6 @@ function getFullName(student) {
 
   return fullName;
 }
-function getImageName(student) {
-  const result = student.lastName.toLowerCase() + "_" + student.firstName.substring(0, 1).toLowerCase() + ".png";
-  return result;
-}
 function getBloodStatus(student) {
   if (bloodHistory.pure.includes(student.lastName)) {
     return "Pure";
@@ -173,6 +172,28 @@ function getBloodStatus(student) {
     return "Half";
   } else {
     return "Muggle born";
+  }
+}
+function getImageName(student) {
+  const fileName = student.lastName.toLowerCase() + "_" + student.firstName.substring(0, 1).toLowerCase() + ".png";
+  const lastNameDoubles = allStudents.filter(sameLastName);
+
+  let result = null;
+
+  if (lastNameDoubles.length >= 2) {
+    result = student.lastName.toLowerCase() + "_" + student.firstName.toLowerCase() + ".png";
+  } else {
+    result = student.lastName.toLowerCase() + "_" + student.firstName.substring(0, 1).toLowerCase() + ".png";
+  }
+
+  return result;
+
+  function sameLastName(comparingStudent) {
+    if (student.lastName === comparingStudent.lastName) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 
@@ -276,6 +297,7 @@ function showPopup(student) {
   document.querySelector("#popup #lastName").textContent = `Last name: ${student.lastName}`;
   document.querySelector("#popup #nickName").textContent = `Nick name: ${student.nickName}`;
   document.querySelector("#popup #bloodStatus").textContent = `Blood status: ${student.bloodStatus}`;
+
   document.querySelector("#popup img").src = `imgs/${student.image}`;
 
   //Txt on buttons
@@ -312,8 +334,14 @@ function showPopup(student) {
   //listeners
 
   document.querySelector("#closePopup").addEventListener("click", closePopup);
-  document.querySelector("#popup #expellBtn").addEventListener("click", expellStudent);
   document.querySelector("#popup #prefectBtn").addEventListener("click", prefectStudent);
+
+  if (student.isMe === true) {
+    document.querySelector("#popup #expellBtn").classList = "transparent";
+  } else {
+    document.querySelector("#popup #expellBtn").classList = "";
+    document.querySelector("#popup #expellBtn").addEventListener("click", expellStudent);
+  }
 
   //only enables inqBtn if bloodstatus = pure && House = Slytherin ------ unless the student is expelled
   if ((student.bloodStatus === "Pure" && student.house === "Slytherin") || isHacked === true) {
@@ -327,6 +355,7 @@ function showPopup(student) {
   } else {
     document.querySelector("#inqBtn").classList = "hide";
   }
+
   //Make popup visible
   document.querySelector("#popup").classList.add("show");
 
@@ -341,10 +370,8 @@ function showPopup(student) {
     if (isHacked) {
       setTimeout(reToggleInqSquad, 2000);
     }
-
     closePopup();
   }
-
   function reToggleInqSquad() {
     student.inqSquad = false;
     buildList();
@@ -358,7 +385,8 @@ function showPopup(student) {
    */
 
   function expellStudent() {
-    student.expelled = !student.expelled;
+    student.expelled = true;
+    student.prefect = false;
     //gets index if sudent in the allStudents array, removes the object, and unshift it to the expelled array
     const iOfStudent = allStudents.indexOf(student);
     const expelledStudent = allStudents.splice(iOfStudent, 1);
@@ -398,7 +426,10 @@ function showPopup(student) {
     document.querySelector("#prefectConflict").classList.add("show");
 
     //insert info about the already prefected student
-    document.querySelector("#prefectConflict .student1").textContent = prefectedStudent.fullName;
+    document.querySelector(
+      "#prefectConflict p"
+    ).textContent = `Remove ${prefectedStudent.firstName} ${prefectedStudent.lastName}  if you want to appoint ${student.firstName} ${student.lastName}`;
+    document.querySelector("#prefectConflict #remove1").textContent = `Remove ${prefectedStudent.firstName} ${prefectedStudent.lastName}`;
 
     //Eventlisteners for the 2 options
     document.querySelector("#remove1").addEventListener("click", removePrefect);
@@ -430,12 +461,16 @@ function showPopup(student) {
    */
 
   function closePopup() {
+    //removed listeners added in conditions
     if ((student.bloodStatus === "Pure" && student.house === "Slytherin") || isHacked === true) {
       document.querySelector("#inqBtn").removeEventListener("click", toggleInqSquad);
-      console.log("dims");
     }
+    if (student.isMe === false) {
+      document.querySelector("#popup #expellBtn").removeEventListener("click", expellStudent);
+    }
+
+    //remove listeners
     document.querySelector("#closePopup").removeEventListener("click", closePopup);
-    document.querySelector("#popup #expellBtn").removeEventListener("click", expellStudent);
     document.querySelector("#popup #prefectBtn").removeEventListener("click", prefectStudent);
 
     //only removes inqBtn-funcionality if bloodstatus = pure && House = Slytherin
@@ -548,6 +583,10 @@ function setSorting(sortBy, direction) {
  * buildList - builds list by the globally stored filter, sort and search settings / variables
  */
 function buildList() {
+  if (isHacked === true) {
+    ruinBloodStatusList;
+  }
+
   const selectedList = getSelectedList();
   const filteredList = selectedList.filter(filterList);
   const sortedList = filteredList.sort(sortList);
@@ -579,11 +618,17 @@ function searchList(student) {
 
 function hackTheSystem() {
   if (isHacked === false) {
-    addMyself();
-    isHacked = true;
+    setTimeout(hackDelay, 3000);
   } else {
     console.log("Nice try Peter..");
   }
+}
+
+function hackDelay() {
+  document.querySelector("#hackedScreen").classList = "hacked";
+  addMyself();
+  document.querySelector("h1").textContent = `Hackwarts Student List`;
+  isHacked = true;
 }
 
 function addMyself() {
@@ -592,7 +637,7 @@ function addMyself() {
 
   allStudents.splice(rndIndex, 0, me);
 
-  ruinBloodStatus();
+  ruinBloodStatusList();
 }
 
 function createMyself() {
@@ -604,6 +649,7 @@ function createMyself() {
   me.nickName = "MUHAHA";
   me.house = "Slytherin";
   me.gender = "boy";
+  me.image = "jensen_m.png";
   me.bloodStatus = "Pure";
   me.isMe = true;
 
@@ -616,7 +662,7 @@ function getRandomIndex() {
   return rndIndex;
 }
 
-function ruinBloodStatus() {
+function ruinBloodStatusList() {
   allStudents.forEach(rndBloodStatus);
   buildList();
 }
