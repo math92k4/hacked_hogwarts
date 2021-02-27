@@ -103,6 +103,9 @@ function prepareData(jsonData) {
 
     //Capitalize nameparts
     student.firstName = capitalizeData(nameParts.firstName);
+    if (student.firstName === "") {
+      student.firstName = `"error"`;
+    }
     student.middleName = capitalizeData(nameParts.middleName);
     student.lastName = capitalizeData(nameParts.lastName);
     student.house = capitalizeData(student.house);
